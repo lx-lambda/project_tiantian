@@ -42,15 +42,26 @@ $(function(){
 		var len = $('#user_name').val().length;
 		if(len<5||len>20)
 		{
-			$('#user_name').next().html('请输入5-20个字符的用户名')
+			$().next().html('请输入5-20个字符的用户名')
 			$('#user_name').next().show();
 			error_name = true;
 		}
 		else
 		{
-			$('#user_name').next().hide();
-			error_name = false;
+
+			$.get('/checkname/?uname='+$("#user_name").val(),function (data) {
+				if (data.count != 0){
+					$('#user_name').next().html('用户名存在')
+					$('#user_name').next().show();
+					error_name = true;
+				}
+				else {
+					$('#user_name').next().hide();
+					error_name = false;
+				}
+                });
 		}
+
 	}
 
 	function check_pwd(){

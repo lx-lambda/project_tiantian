@@ -4,4 +4,8 @@ import views
 
 urlpatterns = [
     url(r'^$', views.index),
+    url(r'^register/$', views.register),
+    url(r'^registerpost1/$', views.register_post1),
+    url(r'^checkname/$', views.checkname),
+    url(r'^login/$', views.login),
 ]
