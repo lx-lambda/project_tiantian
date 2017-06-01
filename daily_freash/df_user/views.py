@@ -2,7 +2,7 @@
 from hashlib import sha1
 
 from django.shortcuts import render
-from django.http import HttpResponse,JsonResponse
+from django.http import HttpResponse,JsonResponse,HttpResponseRedirect
 from models import *
 
 # Create your views here.
@@ -58,7 +58,54 @@ def register_post1(request):
         return render(request, 'df_user/register.html', context)
 
 def login(request):
-    return render(request,'df_user/login.html',{'title': '天天生鲜-登录'})
+    uname = request.COOKIES.get('uname','')
+    context = {'name_error':0, 'pwd_error':0 ,'name_val': uname, 'title': '天天生鲜-登录'}
+    return render(request,'df_user/login.html',context)
+
+
+def login_check(request):
+    dic = request.POST
+    username = dic.get('username')
+    pwd = dic.get('pwd')
+    jizhu = dic.get('jizhu')
+
+    list = UserInfo.objects.filter(uname=username)
+    # print username ,pwd
+
+
+    if len(list) == 1:
+        s1 = sha1()
+        s1.update(pwd)
+
+        if s1.hexdigest() == list[0].upwd:
+            url = request.COOKIES.get('url','/')
+            red = HttpResponseRedirect(url)
+            red.set_cookie('url','',max_age=-1)
+
+            if jizhu != 0:
+                red.set_cookie('uname',username)
+            else:
+                red.set_cookie('uname','',max_age=-1)
+
+            request.session['uname'] = username
+            request.session['user_id'] = list[0].upwd
+
+            return red
+        else:
+            context = {'name_error': 0, 'pwd_error': 1,'name_val': list[0].uname, 'pwd_val': pwd, 'title': '天天生鲜-登录'}
+            return render(request, 'df_user/login.html', context)
+    else:
+        context = {'name_error':1, 'pwd_error':0 ,'name_val': list[0].uname, 'pwd_val': pwd, 'title': '天天生鲜-登录'}
+        return render(request, 'df_user/login.html',context)
+
+
+
+
+
+
+
+
+
 
 
 
