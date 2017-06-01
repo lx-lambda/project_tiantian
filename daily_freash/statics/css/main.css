@@ -542,13 +542,15 @@ html,body{height:100%}
 	background-color:#f9f9f9;
 	margin:10px 0 15px;
 	padding:10px 0;
-	height:90px;
+	/*height:90px;*/
+
 }
 
 .user_info_list li{
 	line-height:30px;
 	text-indent:30px;
 	font-size:14px;
+
 }
 
 .user_info_list li span{

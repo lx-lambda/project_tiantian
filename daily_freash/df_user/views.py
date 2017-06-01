@@ -98,7 +98,27 @@ def login_check(request):
         context = {'name_error':1, 'pwd_error':0 ,'name_val': list[0].uname, 'pwd_val': pwd, 'title': '天天生鲜-登录'}
         return render(request, 'df_user/login.html',context)
 
+def user_center_info(request):
+    name = request.COOKIES.get('uname','')
+    user = UserInfo.objects.filter(uname=name)
 
+    # context = {'title': '用户中心'}
+    context = {'title': '用户中心', 'name': name, 'adrr': user[0].uaddr, 'phone': user[0].uphone,'active':['active','','']}
+    return render(request,'df_user/user_center_info.html',context)
+
+def user_center_order(request):
+    context = {'title': '用户中心','active':['','active','']}
+    return render(request,'df_user/user_center_order.html',context)
+
+def user_center_site(request):
+    if request.method == 'POST':
+        name = request.COOKIES.get('uname', '')
+        UserInfo.objects.filter()
+        info = request.POST
+
+
+    context = {'title': '用户中心','active':['','','active']}
+    return render(request,'df_user/user_center_site.html',context)
 
 
 
