@@ -4,19 +4,23 @@ from hashlib import sha1
 from django.shortcuts import render
 from django.http import HttpResponse,JsonResponse,HttpResponseRedirect
 from models import *
+import user_decorator
 
 # Create your views here.
 
-#加载首页视图,
-def index(request):
-    return render(request, 'df_user/index.html',{'title': "天天生鲜-首页"})
 
-#加载注册视图
+# 加载首页视图,
+def index(request):
+    return render(request, 'df_user/index.html', {'title': "天天生鲜-首页", 'page': 0})
+
+
+# 加载注册视图
 def register(request):
 
     return render(request, 'df_user/register.html',{'title': "天天生鲜-注册"})
 
-#通过ajax验证用户名是否存在
+
+# 通过ajax验证用户名是否存在
 def checkname(request):
 
     uname=request.GET.get('uname')
@@ -25,7 +29,8 @@ def checkname(request):
     print count
     return JsonResponse({'count': count})
 
-#提交注册信息
+
+# 提交注册信息
 def register_post1(request):
 
     dic = request.POST
@@ -57,9 +62,10 @@ def register_post1(request):
         context = {"return": "用户已经存在"}
         return render(request, 'df_user/register.html', context)
 
+
 def login(request):
     uname = request.COOKIES.get('uname','')
-    context = {'name_error':0, 'pwd_error':0 ,'name_val': uname, 'title': '天天生鲜-登录'}
+    context = {'name_error': 0, 'pwd_error':0 ,'name_val': uname, 'title': '天天生鲜-登录'}
     return render(request,'df_user/login.html',context)
 
 
@@ -72,7 +78,6 @@ def login_check(request):
     list = UserInfo.objects.filter(uname=username)
     # print username ,pwd
 
-
     if len(list) == 1:
         s1 = sha1()
         s1.update(pwd)
@@ -80,45 +85,76 @@ def login_check(request):
         if s1.hexdigest() == list[0].upwd:
             url = request.COOKIES.get('url','/')
             red = HttpResponseRedirect(url)
-            red.set_cookie('url','',max_age=-1)
+            red.set_cookie('url', '', max_age=-1)
 
             if jizhu != 0:
-                red.set_cookie('uname',username)
+                red.set_cookie('uname', username)
             else:
-                red.set_cookie('uname','',max_age=-1)
+                red.set_cookie('uname', '', max_age=-1)
 
             request.session['uname'] = username
-            request.session['user_id'] = list[0].upwd
+            request.session['user_id'] = list[0].id
 
             return red
         else:
-            context = {'name_error': 0, 'pwd_error': 1,'name_val': list[0].uname, 'pwd_val': pwd, 'title': '天天生鲜-登录'}
+            context = {'name_error': 0,
+                       'pwd_error': 1,
+                       'name_val': list[0].uname,
+                       'pwd_val': pwd,
+                       'title': '天天生鲜-登录'}
             return render(request, 'df_user/login.html', context)
     else:
-        context = {'name_error':1, 'pwd_error':0 ,'name_val': list[0].uname, 'pwd_val': pwd, 'title': '天天生鲜-登录'}
-        return render(request, 'df_user/login.html',context)
+        context = {'name_error': 1,
+                   'pwd_error': 0,
+                   'name_val': list[0].uname,
+                   'pwd_val': pwd, 'title': '天天生鲜-登录'}
+        return render(request, 'df_user/login.html', context)
 
+
+def logout(request):
+    request.session.flush()
+    return HttpResponseRedirect('/')
+
+
+@user_decorator.check_log
 def user_center_info(request):
     name = request.COOKIES.get('uname','')
     user = UserInfo.objects.filter(uname=name)
 
     # context = {'title': '用户中心'}
-    context = {'title': '用户中心', 'name': name, 'adrr': user[0].uaddr, 'phone': user[0].uphone,'active':['active','','']}
-    return render(request,'df_user/user_center_info.html',context)
+    context = {'title': '用户中心',
+               'name': name,
+               'adrr': user[0].uaddr,
+               'phone': user[0].uphone,
+               'active': ['active', '', ''],
+               'page': 1}
+    return render(request, 'df_user/user_center_info.html', context)
 
+
+@user_decorator.check_log
 def user_center_order(request):
-    context = {'title': '用户中心','active':['','active','']}
-    return render(request,'df_user/user_center_order.html',context)
+    context = {'title': '用户中心',
+               'active': ['', 'active', ''],
+               'page': 1}
+    return render(request, 'df_user/user_center_order.html', context)
 
+
+@user_decorator.check_log
 def user_center_site(request):
+    user = UserInfo.objects.get(id=request.session['user_id'])
     if request.method == 'POST':
-        name = request.COOKIES.get('uname', '')
-        UserInfo.objects.filter()
         info = request.POST
+        user.ushou = info.get('ushou', '未填写')
+        user.uphone = info.get('uphone', '未填写')
+        user.uaddr = info.get('uadrr', '未填写')
+        user.uyoubian = info.get('uyoubian', '未填写')
+        user.save()
 
-
-    context = {'title': '用户中心','active':['','','active']}
-    return render(request,'df_user/user_center_site.html',context)
+    context = {'title': '用户中心',
+               'active': ['', '', 'active'],
+               'user': user,
+               'page': 1}
+    return render(request, 'df_user/user_center_site.html', context)
 
 
 
