@@ -9,11 +9,6 @@ import user_decorator
 # Create your views here.
 
 
-# 加载首页视图,
-def index(request):
-    return render(request, 'df_user/index.html', {'title': "天天生鲜-首页", 'page': 0})
-
-
 # 加载注册视图
 def register(request):
 
