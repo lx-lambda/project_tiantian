@@ -1,0 +1,72 @@
+{% extends "muban_body.html"%}
+{%block title%}
+{{page.object_list.0.gtype.ttitle}}
+{%endblock title%}
+		{%block content%}
+
+	<div class="navbar_con">
+
+			<div class="subnav_con " style="margin-left: 22px">
+				<h1 >搜索&nbsp;<b style="color: #2B6FB6">{{query}}</b>&nbsp;结果如下：</h1>
+
+			</div>
+
+
+	</div>
+
+
+
+
+    <div class="main_wrap clearfix">
+
+			<ul class="goods_type_list clearfix">
+				{%for good in page%}
+
+				<li>
+					<a href="/detail{{good.object.id}}/"><img src="/static/{{good.object.gpic}}"></a>
+					<h4><a href="detail.html">{{good.object.gtitle}}</a></h4>
+					<div class="operate">
+						<span class="prize">￥{{good.object.gprice}}</span>
+						<span class="unit">{{good.object.gprice}}/{{good.object.gunit}}</span>
+						<a href="#" class="add_goods" title="加入购物车"></a>
+					</div>
+				</li>
+
+                {%empty%}
+					<li>啥也没找到</li>
+				{%endfor%}
+			</ul>
+
+			<div class="pagenation">
+
+
+				<a
+						{%if page.has_previous%}
+						style="background-color: #3399ff"
+						href="?q={{query}}&amp;page={{page.number|add:-1}}"
+						{%endif%}
+				><上一页</a>
+
+				{%for page_num in page.paginator.page_range%}
+				<a href="?q={{query}}&amp;page={{page_num}}"
+					{%if page.number == page_num%}
+				   style="border-color: red"
+				   class="active"
+				   {%endif%}
+				>{{page_num}}</a>
+				{%endfor%}
+
+
+				<a
+						{%if page.has_next%}
+						style="background-color: #3399ff"
+						href="?q={{query}}&amp;page={{page.number|add:1}}"
+						{%endif%}
+				>下一页></a>
+
+			</div>
+    </div>
+
+		{%endblock content%}
+
+

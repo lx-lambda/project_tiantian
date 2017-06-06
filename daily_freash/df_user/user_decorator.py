@@ -8,6 +8,7 @@ def check_log(fun):
         if request.session.has_key('user_id'):
             return fun(request,*args, **kwargs)
         else:
+
             red = HttpResponseRedirect('/login/')
             red.set_cookie('url', request.get_full_path())
             return red

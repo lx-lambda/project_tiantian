@@ -1,8 +1,98 @@
 {% extends "muban_body.html"%}
 
+{%block head%}
+<script>
+
+	$(function () {
+
+		var add = $('.add')
+		var sul = $('.minus')
+		var num = $('.num_show')
+
+		caladata()
+
+//		手动点击加
+		add.click(function () {
+		    var o_num = $(this).next()
+		    var num = $(this).next().val()-0
+            var kucun = $(this).parents('.col06').siblings('.col03').children('em').text()-0
+
+		    if (kucun > num ){
+		        o_num.val(num+1)
+
+			}
+			caladata()
+			ajax_num(o_num);
+        })
+
+
+//		手动点击减
+		sul.click(function () {
+		    var o_num = $(this).prev()
+		    var num = $(this).prev().val()-0
+
+			if (num > 1){
+			    o_num.val(num-1)}
+			caladata()
+			ajax_num(o_num);
+        })
+
+//		手动输入函数
+		num.keyup(function () {
+		    var o_num = $(this)
+            o_num.val(parseInt(o_num.val()))
+            var num =o_num.val()
+
+			var kucun = $(this).parents('.col06').siblings('.col03').children('em').text()-0
+
+            if(num < 1 || isNaN(num)){
+                o_num.val('1')
+            }
+            if (kucun < num ){
+                o_num.val(kucun)
+            }
+
+			caladata();
+            ajax_num(o_num);
+
+        })
+
+//		计算函数
+		function caladata() {
+		    var all_num = 0;
+		    add.each(function () {
+				var me = $(this)
+				var num = me.parent().children('.num_show').val()-0;
+				var price = me.parents('.col06').siblings('.col05').children('em').text()-0;
+				var total1 = me.parents('.col06').siblings('.col07').children('em');
+
+				total1.text((price * num).toFixed(2));
+
+				all_num += (total1.text()-0);
+            })
+
+			$('#total_price').text(all_num.toFixed(2))
+
+    	}
+
+//    	ajax请求函数
+    	function ajax_num(n) {
+
+			var num = n.val()
+			var good_id = n.siblings('.id').text()
+			$.get('/cart/add'+good_id+'_'+num+'_0',function (data) {
+
+			})
+        }
+
+    })
+
+</script>
+{%endblock head%}
+
 
 {%block content%}
-	<div class="total_count">全部商品<em>2</em>件</div>	
+	<div class="total_count">全部商品<em>{{good_list.count}}</em>件</div>
 	<ul class="cart_list_th clearfix">
 		<li class="col01">商品名称</li>
 		<li class="col02">商品单位</li>
@@ -11,45 +101,33 @@
 		<li class="col05">小计</li>
 		<li class="col06">操作</li>
 	</ul>
-	<ul class="cart_list_td clearfix">
-		<li class="col01"><input type="checkbox" name="" checked></li>
-		<li class="col02"><img src="/static/images/goods/goods012.jpg"></li>
-		<li class="col03">奇异果<br><em>25.80元/500g</em></li>
-		<li class="col04">500g</li>
-		<li class="col05">25.80元</li>
-		<li class="col06">
-			<div class="num_add">
-				<a href="javascript:;" class="add fl">+</a>
-				<input type="text" class="num_show fl" value="1">	
-				<a href="javascript:;" class="minus fl">-</a>	
-			</div>
-		</li>
-		<li class="col07">25.80元</li>
-		<li class="col08"><a href="javascript:;">删除</a></li>
-	</ul>
 
+	{%for good in good_list %}
 	<ul class="cart_list_td clearfix">
 		<li class="col01"><input type="checkbox" name="" checked></li>
-		<li class="col02"><img src="/static/images/goods/goods003.jpg"></li>
-		<li class="col03">大兴大棚草莓<br><em>16.80元/500g</em></li>
-		<li class="col04">500g</li>
-		<li class="col05">16.80元</li>
+		<li class="col02"><a href="/detail{{good.cgood.id}}/"><img src="/static/{{good.cgood.gpic}}"></a></li>
+		<li class="col03">{{good.cgood.gtitle}}<br>库存<em>{{good.cgood.gkucun}}</em></li>
+		<li class="col04">{{good.cgood.gunit}}</li>
+		<li class="col05"><em>{{good.cgood.gprice}}</em>元</li>
 		<li class="col06">
 			<div class="num_add">
+				<em class="id" style="display: none">{{good.cgood.id}}</em>
 				<a href="javascript:;" class="add fl">+</a>
-				<input type="text" class="num_show fl" value="1">	
+				<input type="text" class="num_show fl" value="{{good.ccount}}">
 				<a href="javascript:;" class="minus fl">-</a>	
 			</div>
 		</li>
-		<li class="col07">16.80元</li>
+		<li class="col07"><em></em>元</li>
 		<li class="col08"><a href="javascript:;">删除</a></li>
 	</ul>
-	
+	{%endfor%}
+
+
 
 	<ul class="settlements">
 		<li class="col01"><input type="checkbox" name="" checked=""></li>
 		<li class="col02">全选</li>
-		<li class="col03">合计(不含运费)：<span>¥</span><em>42.60</em><br>共计<b>2</b>件商品</li>
+		<li class="col03">合计(不含运费)：<span>¥</span><em id="total_price"></em><br>共计<b id="total_goods">{{good_list.count}}</b>件商品</li>
 		<li class="col04"><a href="place_order.html">去结算</a></li>
 	</ul>
 

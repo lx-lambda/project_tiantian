@@ -42,6 +42,7 @@ INSTALLED_APPS = (
     'df_cart',
     'df_order',
     'tinymce',
+    'haystack',
 
 )
 
@@ -114,7 +115,7 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR,'statics'),
 ]
 
-MEDIA_ROOT = os.path.join(BASE_DIR, 'static')
+MEDIA_ROOT = os.path.join(BASE_DIR, 'statics')
 
 
 TINYMCE_DEFAULT_CONFIG = {
@@ -122,3 +123,13 @@ TINYMCE_DEFAULT_CONFIG = {
     'width': 600,
     'height': 400,
 }
+
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.whoosh_cn_backend.WhooshEngine',
+        'PATH': os.path.join(BASE_DIR, 'whoosh_index'),
+    }
+}
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+
+HAYSTACK_SEARCH_RESULTS_PER_PAGE = 10

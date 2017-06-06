@@ -5,6 +5,7 @@ from django.shortcuts import render
 from django.http import HttpResponse,JsonResponse,HttpResponseRedirect
 from models import *
 import user_decorator
+from df_goods.models import GoodsInfo
 
 # Create your views here.
 
@@ -115,6 +116,11 @@ def logout(request):
 def user_center_info(request):
     name = request.COOKIES.get('uname','')
     user = UserInfo.objects.filter(uname=name)
+    # 浏览记录
+    id_list = eval(request.COOKIES.get('liulan','[]'))[::-1]
+    good_list = []
+    for item in id_list:
+        good_list.append(GoodsInfo.objects.get(id=item))
 
     # context = {'title': '用户中心'}
     context = {'title': '用户中心',
@@ -122,7 +128,8 @@ def user_center_info(request):
                'adrr': user[0].uaddr,
                'phone': user[0].uphone,
                'active': ['active', '', ''],
-               'page': 1}
+               'page': 1,
+               'liulan':good_list}
     return render(request, 'df_user/user_center_info.html', context)
 
 
