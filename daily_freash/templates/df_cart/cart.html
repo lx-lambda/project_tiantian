@@ -8,8 +8,18 @@
 		var add = $('.add')
 		var sul = $('.minus')
 		var num = $('.num_show')
+		var del = $('.col08')
 
 		caladata()
+
+//		手动功能删除
+		del.click(function () {
+
+		    var o_num = $(this).siblings('.col06').find('.num_show')
+            o_num.val(0)
+			caladata()
+			ajax_num(o_num);
+        })
 
 //		手动点击加
 		add.click(function () {
@@ -81,6 +91,9 @@
 			var num = n.val()
 			var good_id = n.siblings('.id').text()
 			$.get('/cart/add'+good_id+'_'+num+'_0',function (data) {
+                if (num == 0){
+                    location.href = '/cart/'
+                }
 
 			})
         }
