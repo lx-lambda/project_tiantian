@@ -13,13 +13,14 @@ def cart(request):
     print request.get_full_path()
     # 后面的0 实现逻辑删除
     # 后面的切片实现翻转,显示最新加入购物车的类容
-    good_list = MyCart.objects.filter(cuser_id=int(request.session.get('user_id'))).exclude(ccount=0)[::-1]
+    good_list = MyCart.objects.filter(cuser_id=int(request.session.get('user_id')))[::-1]
     context = {'title': "购物车",
                'page': 1,
                'good_list': good_list}
     return render(request, 'df_cart/cart.html', context)
 
-# 添加到购物车
+
+# 添加到购物车,做加法运算
 @check_log
 def add(request, good_id, count, source):
     # 根据商品找记录,若能找到商品记录和相对因的记录说明有记录
@@ -48,7 +49,21 @@ def add(request, good_id, count, source):
         return JsonResponse({'data': data})
     else:
         return HttpResponseRedirect('/cart/')
-#
-# def change(request, good_id, count):
 
+
+# 购物车中做改变后的ajax的请求
+def change(request, cart_id, count):
+    cart = MyCart.objects.get(id=int(cart_id))
+    cart.ccount = int(count)
+    cart.save()
+    return JsonResponse({})
+
+
+# 删除的ajax的请求
+def delete(request, cart_id):
+    print cart_id
+    cart = MyCart.objects.get(id=int(cart_id))
+    # 注意这里删除不用save()提交
+    cart.delete()
+    return JsonResponse({'data': 'ok'})
 
