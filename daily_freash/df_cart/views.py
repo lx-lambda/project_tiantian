@@ -12,8 +12,9 @@ from df_user.user_decorator import check_log
 def cart(request):
     print request.get_full_path()
     # 后面的0 实现逻辑删除
+
     # 后面的切片实现翻转,显示最新加入购物车的类容
-    good_list = MyCart.objects.filter(cuser_id=int(request.session.get('user_id')))[::-1]
+    good_list = MyCart.objects.filter(cuser_id=int(request.session.get('user_id'))).exclude(ccount=0)[::-1]
     context = {'title': "购物车",
                'page': 1,
                'good_list': good_list}
@@ -65,5 +66,6 @@ def delete(request, cart_id):
     cart = MyCart.objects.get(id=int(cart_id))
     # 注意这里删除不用save()提交
     cart.delete()
-    return JsonResponse({'data': 'ok'})
+    return JsonResponse({'data1': 'ok'})
+
 

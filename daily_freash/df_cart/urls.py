@@ -7,5 +7,7 @@ urlpatterns = [
     url(r'add(\d+)_(\d+)_(\d?)/$', views.add),
     url(r'change(\d+)_(\d+)/$', views.change),
     url(r'delete(\d+)/$', views.delete),
+
+
 ]
 
