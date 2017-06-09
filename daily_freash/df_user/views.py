@@ -6,6 +6,8 @@ from django.http import HttpResponse,JsonResponse,HttpResponseRedirect
 from models import *
 import user_decorator
 from df_goods.models import GoodsInfo
+from df_order.models import OrderInfo,DetailInfo
+from django.core.paginator import Paginator
 
 # Create your views here.
 
@@ -134,10 +136,18 @@ def user_center_info(request):
 
 
 @user_decorator.check_log
-def user_center_order(request):
+def user_center_order(request,page_num):
+    order_list = OrderInfo.objects.filter(ouser_id=request.session['user_id']).order_by('-oid')
+    paginator = Paginator(order_list, 1)
+    if not page_num:
+        page_num = 1
+    page_list = paginator.page(int(page_num))
+
     context = {'title': '用户中心',
                'active': ['', 'active', ''],
-               'page': 1}
+               'page': 1,
+               'page_list': page_list,
+               'paginator': paginator}
     return render(request, 'df_user/user_center_order.html', context)
 
 

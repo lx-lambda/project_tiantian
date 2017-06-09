@@ -71,16 +71,6 @@
         <div class="add_jump"></div>
         <script>
             $(function () {
-
-
-//               ajax请求函数
-                function ajax_num(n) {
-                        var good_id = n.siblings('.id').text()
-                        $.get('/cart/add'+good_id+'_1_1',function (data) {
-                            $('#show_count').html(data.data);
-                        })
-                    }
-
 //                  点击触发动画函数
                 $('.add_goods').click(function(){
                     var n = $(this)
@@ -91,21 +81,31 @@
                     var $to_x = $('#show_count').offset().top;
                     var $to_y = $('#show_count').offset().left;
 
-                    $(".add_jump").css({'left':$add_y,'top':$add_x,'display':'block'})
 
-                    $(".add_jump").stop().animate({
-                        'left': $to_y+7,
-                        'top': $to_x+7},
-                        "fast", function() {
-                            $(".add_jump").fadeOut('fast',function(){
-//                                  动画结束后发送ajax请求
 
-                                ajax_num(n)
+                    var good_id = n.siblings('.id').text()
+                    if ($('.login_btn > a').length == 2){
+
+                            location.href = '/login/'
+                            return;
+                        }
+                    $.get('/cart/add'+good_id+'_1_1',function (data) {
+                        $('#show_count').html(data.data);
+                        if (data.isok){
+
+                            $(".add_jump").css({'left':$add_y,'top':$add_x,'display':'block'})
+                            $(".add_jump").stop().animate({
+                            'left': $to_y+7,
+                            'top': $to_x+7},
+                            "fast", function() {
+                                $(".add_jump").fadeOut('fast');
 
                             });
-
+                        }else {
+                            alert('库存不足')
+                        }
                     });
-                })
+                });
 
 
             })

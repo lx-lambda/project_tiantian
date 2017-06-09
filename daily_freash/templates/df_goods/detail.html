@@ -114,22 +114,29 @@
             var $to_x = $('#show_count').offset().top;
             var $to_y = $('#show_count').offset().left;
 
-            $(".add_jump").css({'left':$add_y+80,'top':$add_x+10,'display':'block'})
             $('.add_cart').click(function(){
-                $(".add_jump").stop().animate({
-                    'left': $to_y+7,
-                    'top': $to_x+7},
-                    "fast", function() {
-                        $(".add_jump").fadeOut('fast',function(){
-                            $.get('/cart/add{{good.id}}_'+$(".num_show").val()+'_1',function (data) {
-                                $('#show_count').html(data.data);
+                 if ($('.login_btn > a').length == 2){
+                            location.href = '/login/'
+                            return;
+                        }
+                $.get('/cart/add{{good.id}}_'+$(".num_show").val()+'_1',function (data) {
 
-                            })
-
+                    $('#show_count').html(data.data);
+                    if (data.isok){
+                        $(".add_jump").css({'left':$add_y+80,'top':$add_x+10,'display':'block'})
+                        $(".add_jump").stop().animate({
+                        'left': $to_y+7,
+                        'top': $to_x+7},
+                        "fast", function() {
+                            $(".add_jump").fadeOut('fast');
                         });
+                    }else {
+                        alert('库存不足')
+                    }
 
                 });
-            })
+
+            });
         </script>
 
 

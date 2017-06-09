@@ -69,9 +69,9 @@ def list(request, tid, page_num, sort):
     typeinfo = TypeInfo.objects.get(id=tid)  # 获取相应的品了类
     paginator = Paginator(goodslist, 10)
     page_list = paginator.page(int(page_num))
-    print 'lll'
+
     print typeinfo.id
-    print 'lll'
+
 
     context = {'title': '商品列表',
                'title1': '1',

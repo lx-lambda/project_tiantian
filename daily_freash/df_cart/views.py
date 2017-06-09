@@ -36,20 +36,16 @@ def add(request, good_id, count, source):
         cart.ccount = int(count)
         cart.save()
     else:
-        if source == '0':
-            carts[0].ccount = count
-            carts[0].save()
-        else:
-            carts[0].ccount += int(count)
-            carts[0].save()
 
+        carts[0].ccount += int(count)
+        if carts[0].ccount <= carts[0].cgood.gkucun:
+            carts[0].save()
+            isok = True
+        else:
+            isok = False
     data = MyCart.objects.filter(cuser_id=int(request.session.get('user_id'))).count()
 
-    print data
-    if request.is_ajax():
-        return JsonResponse({'data': data})
-    else:
-        return HttpResponseRedirect('/cart/')
+    return JsonResponse({'data': data, 'isok': isok})
 
 
 # 购物车中做改变后的ajax的请求
