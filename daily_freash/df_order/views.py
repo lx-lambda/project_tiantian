@@ -67,8 +67,8 @@ def order_commit(request):
 
             else:
                 transaction.savepoint_rollback(s_point)
-                return HttpResponse(cart.ccount)
-                # return redirect('/order/')
+                # return HttpResponse(cart.ccount)
+                return redirect('/cart/')
         order.ototal = total
         order.save()
 
